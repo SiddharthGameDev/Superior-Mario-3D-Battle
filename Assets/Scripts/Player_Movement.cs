@@ -48,7 +48,9 @@ public class Player_Movement : MonoBehaviour
             Jumping = false;
         }
 
-        transform.Translate(playerVelocityVector * Time.deltaTime);
+        transform.Translate(playerVelocityVector * Time.deltaTime); 
+
+
         
     }
 
