@@ -2,51 +2,53 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
 public class Character_Movement : MonoBehaviour
 {
+    
     Animator animator;
-   
-    // Start is called before the first frame update
-    void Start()
+    private Rigidbody RB;    
+    public float Speed = 8.0f;
+    public Camera followCamera;
+    private Vector3 CameraPos;
+  
+
+
+    private void Awake()
     {
+        RB = GetComponent<Rigidbody>();
+        CameraPos = followCamera.transform.position - transform.position;
         animator = GetComponent<Animator>();
     }
-
-    // Update is called once per frame
-    void Update()
+    
+    
+    void FixedUpdate()
     {
-        /*bool isRunning = animator.GetBool("isRunning");
-        
-              
-        bool forwardPressed = Input.GetKey("w");
+        float horizontalInput = Input.GetAxis("Horizontal");
+        float verticalInput = Input.GetAxis("Vertical");
 
-       
+        Vector3 movement = new Vector3(horizontalInput, 0, verticalInput).normalized;
 
-        if (!isRunning && forwardPressed)
+        if(movement == Vector3.zero)
         {
-            animator.SetBool("isRunning", true);
+            return;
         }
-        if (isRunning && !forwardPressed)
-        {
-            animator.SetBool("isRunning", false);
-        }*/
 
-        bool isJumping = Input.GetKey(KeyCode.Space);
-        animator.SetBool("Jump", isJumping);
+        Quaternion targetRotation = Quaternion.LookRotation(movement);
+       // Debug.Log(targetRotation.eulerAngles);
+        targetRotation = Quaternion.RotateTowards(transform.rotation, targetRotation, 360 * Time.fixedDeltaTime);
+        RB.MovePosition(RB.position + movement * Speed * Time.fixedDeltaTime);
+        RB.MoveRotation(targetRotation);
+        
+       // bool isJumping = Input.GetKey(KeyCode.Space);
+       // animator.SetBool("Jump", isJumping);
 
-        bool isRunning = Input.GetKey(KeyCode.W);
-        animator.SetBool("Run", isRunning);
+      //  bool isRunning = Input.GetKey(KeyCode.W);
+       // animator.SetBool("Run", isRunning);
+    }
 
-        bool isTurningLeft = Input.GetKey(KeyCode.A);
-        animator.SetBool("Left", isTurningLeft);
-
-        bool isTurningRight = Input.GetKey(KeyCode.D);
-        animator.SetBool("Right", isTurningRight);
-
-        bool isTurningBack = Input.GetKey(KeyCode.S);
-        animator.SetBool("Back", isTurningBack);
-
-
-
+    private void LateUpdate()
+    {
+        followCamera.transform.position = RB.position + CameraPos;
     }
 }
